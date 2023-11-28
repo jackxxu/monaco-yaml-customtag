@@ -1,0 +1,23 @@
+{
+  "name": "monaco-yaml-customtag",
+  "version": "1.0.0",
+  "description": "YAML plugin for custom tags in the Monaco Editor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "jackxxu/monaco-yaml-customtag",
+  "author": "Jack Xu <jackxxu@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "editor",
+    "frontend",
+    "front-end",
+    "monaco",
+    "monaco-editor",
+    "yaml"
+  ],
+  "peerDependencies": {
+    "monaco-editor": ">=0.36"
+  }
+}
