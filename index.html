@@ -1,0 +1,34 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monaco Editor Extension Example</title>
+  <!-- Load Monaco Editor loader script first -->
+  <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+</head>
+<body>
+  <div id="container" style="height: 300px;"></div>
+
+  <!-- Load your extension script after Monaco Editor loader -->
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+      require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor/min/vs' } });
+
+      require(['vs/editor/editor.main'], function () {
+        console.log('Monaco Editor Extension for YAML loaded');
+        // Initialize Monaco Editor
+        var editor = monaco.editor.create(document.getElementById('container'), {
+          value: '---\n!customTag1 value1\n!customTag2 value2',
+          language: 'yaml',
+        });
+        require(['./src/monaco-yaml-customtag'], function () {
+        });
+      });
+    });
+  </script>
+</body>
+</html>
