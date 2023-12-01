@@ -1,6 +1,6 @@
 {
   "name": "monaco-yaml-customtag",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "YAML plugin for custom tags in the Monaco Editor",
   "main": "index.js",
   "scripts": {
