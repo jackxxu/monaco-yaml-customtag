@@ -247,6 +247,21 @@ define([], function () {
     const tagSchemas = tagSchemasObject(schemas);
     monaco.languages.registerCompletionItemProvider('yaml', createYamlCompletionProvider(tagSchemas));
     monaco.languages.registerHoverProvider('yaml', createYamlHoverProvider(tagSchemas));
+
+    editor.onDidChangeCursorPosition(function (event) {
+      const currentPosition = event.position;
+      const model = editor.getModel();
+      let positionInfo = getPositionInfo(model.getValue(), currentPosition.lineNumber, currentPosition.column);
+
+      if (positionInfo) {
+        const word = positionInfo.customTag;
+        const schema = tagSchemas[word];
+        if (textBeforeCursor(model, currentPosition) === '{') {
+          editor.trigger('{', 'editor.action.triggerSuggest', {});
+        }
+      }
+    });
+
   };
 
   return configureMonacoCustomTags;
