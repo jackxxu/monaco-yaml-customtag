@@ -24,13 +24,13 @@
       });
 
       require(['vs/editor/editor.main'], function () {
-        console.log('Monaco Editor Extension for YAML loaded');
         // Initialize Monaco Editor
         var editor = monaco.editor.create(document.getElementById('container'), {
           value: '---\n!customTag1 value1\n!customTag2 value2',
           language: 'yaml',
         });
         require(['monaco-yaml-customtag'], function () {
+          console.log('111111');
         });
       });
     });
