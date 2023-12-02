@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monaco Editor Extension Example</title>
   <!-- Load Monaco Editor loader script first -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.1.0/ajv7.bundle.js" integrity="sha512-PuzkO+wOBh6m/Jux4nXgl2ItRzed77lFDidDX500DUNlvuzr4OrXtsFhN4q0CCxPoXjTFfiw1z4FmED9J/MMdQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/yamljs@0.3.0/dist/yaml.min.js"></script>
   <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
 </head>
 <body>
@@ -19,7 +21,7 @@
       require.config({
         paths: {
           'vs': 'https://unpkg.com/monaco-editor/min/vs',
-          'monaco-yaml-customtag': './src/monaco-yaml-customtag'
+          'monaco-yaml-customtag': './src/monaco-yaml-customtag',
         }
       });
 
@@ -29,8 +31,29 @@
           value: '---\n!customTag1 value1\n!customTag2 value2',
           language: 'yaml',
         });
-        require(['monaco-yaml-customtag'], function (customTagEditor) {
-          console.log('customTagEditor', customTagEditor);
+        require(['monaco-yaml-customtag'], function (configureMonacoCustomTags) {
+          configureMonacoCustomTags([
+            {
+              name: 'customTag1',
+              description: 'Custom Tag 1',
+              type: 'string',
+              schema: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 10,
+              },
+            },
+            {
+              name: 'customTag2',
+              description: 'Custom Tag 2',
+              type: 'string',
+              schema: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 10,
+              },
+            },
+          ], editor)
         });
       });
     });
