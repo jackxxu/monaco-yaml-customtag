@@ -16,7 +16,12 @@
   <script>
 
     document.addEventListener('DOMContentLoaded', function () {
-      require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor/min/vs' } });
+      require.config({
+        paths: {
+          'vs': 'https://unpkg.com/monaco-editor/min/vs',
+          'monaco-yaml-customtag': './src/monaco-yaml-customtag'
+        }
+      });
 
       require(['vs/editor/editor.main'], function () {
         console.log('Monaco Editor Extension for YAML loaded');
@@ -25,7 +30,7 @@
           value: '---\n!customTag1 value1\n!customTag2 value2',
           language: 'yaml',
         });
-        require(['./src/monaco-yaml-customtag'], function () {
+        require(['monaco-yaml-customtag'], function () {
         });
       });
     });
