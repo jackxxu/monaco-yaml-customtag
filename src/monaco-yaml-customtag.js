@@ -1,12 +1,11 @@
 // yaml-extension.js
 
 // Check if Monaco Editor is defined
-if (typeof monaco !== 'undefined') {
-
+define([], function () {
     console.log(monaco);
     // Register YAML language
     monaco.languages.register({ id: 'yaml' });
-  
+
     // Register autocompletion provider
     monaco.languages.registerCompletionItemProvider('yaml', {
       provideCompletionItems: () => {
@@ -16,7 +15,7 @@ if (typeof monaco !== 'undefined') {
         ];
       },
     });
-  
+
     // Register hover provider
     monaco.languages.registerHoverProvider('yaml', {
       provideHover: (model, position) => {
@@ -38,7 +37,6 @@ if (typeof monaco !== 'undefined') {
         return null;
       },
     });
-  } else {
-    console.error('Monaco Editor is not defined. Make sure it is loaded before this script.');
-  }
-  
+
+    return 123;
+  });

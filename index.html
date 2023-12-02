@@ -29,8 +29,8 @@
           value: '---\n!customTag1 value1\n!customTag2 value2',
           language: 'yaml',
         });
-        require(['monaco-yaml-customtag'], function () {
-          console.log('111111');
+        require(['monaco-yaml-customtag'], function (customTagEditor) {
+          console.log('customTagEditor', customTagEditor);
         });
       });
     });
