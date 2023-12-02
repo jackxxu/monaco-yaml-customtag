@@ -31,29 +31,41 @@
           value: '---\n!customTag1 value1\n!customTag2 value2',
           language: 'yaml',
         });
+
+        schemas = [
+          {
+            "type": "object",
+            "name": "Tag1",
+            "description": "tag1 description",
+            "properties": {
+              "categories": {},
+              "values": {},
+              "function": {},
+              "name": {},
+              "target": {},
+            },
+            "required": [
+              "categories",
+              "values",
+              "function",
+              "name"
+            ]
+          },
+          {
+            "type": "object",
+            "name": "Tag2",
+            "description": "tag2 description",
+            "properties": {
+              "middleware": {},
+              "columns": {},
+              "name": {},
+            },
+            "required": []
+          },
+        ]
+
         require(['monaco-yaml-customtag'], function (configureMonacoCustomTags) {
-          configureMonacoCustomTags([
-            {
-              name: 'customTag1',
-              description: 'Custom Tag 1',
-              type: 'string',
-              schema: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 10,
-              },
-            },
-            {
-              name: 'customTag2',
-              description: 'Custom Tag 2',
-              type: 'string',
-              schema: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 10,
-              },
-            },
-          ], editor)
+          configureMonacoCustomTags(schemas, editor)
         });
       });
     });

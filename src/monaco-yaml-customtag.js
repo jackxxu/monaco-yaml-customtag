@@ -3,7 +3,6 @@ define([], function () {
   const regexWithoutG = new RegExp(regex.source);
   const ajv = new window.ajv7();
   const parser = (yamlString) => { try { return YAML.parse(yamlString); } catch (e) { return null; }};
-  const schemas = {};
 
   const findWhitespaceOrEnd = (str, startPosition) => {
     const regex = /\s|{|}|$/g; // Matches any whitespace character or curly braces or end of the line
@@ -173,10 +172,58 @@ define([], function () {
     });
   };
 
+  function createYamlCompletionProvider(snippets) {
+    return {
+      triggerCharacters: ['!', ',', ':'],
+
+      provideCompletionItems: function (model, position) {
+        let textBefore = textBeforeCursor(model, position);
+
+        let suggestions = [];
+        if (textBefore === '!') {
+          suggestions = snippets.map(suggestionSnippet)
+        }
+
+        if ((textBefore === ',') || (textBefore === '{')) {
+          let positionInfo = getPositionInfo(model.getValue(), position.lineNumber, position.column);
+          const word = positionInfo.customTag;
+          const schema = tagSchemas[word];
+          suggestions = Object.keys(schema.properties).map(suggestionKey)
+        }
+
+        if (textBefore === ':') {
+          // to be refactored
+          let positionInfo = getPositionInfo(model.getValue(), position.lineNumber, position.column);
+          const word = positionInfo.customTag;
+          const schema = tagSchemas[word];
+          if ((schema.properties[positionInfo.closestKey].type ?? '') == 'boolean') {
+            suggestions = ['true', 'false'].map(suggestionValue)
+          }
+        }
+
+        return {suggestions: suggestions};
+      }
+    }
+  }
+
+
+  const tagSchemasObject = function(schemas) {
+    const keyAttribute = 'name';
+    return schemas.reduce((acc, obj) => {
+      const key = obj[keyAttribute];
+      // Create a copy of the object without the specified attribute
+      const { [keyAttribute]: _, ...rest } = obj;
+      acc[key] = rest;
+      return acc;
+    }, {});
+  };
+
   const configureMonacoCustomTags = function(schemas, editor) {
     console.log('configureMonacoCustomTags', schemas);
     console.log('configureMonacoCustomTags', editor);
-    schemas = schemas;
+    const tagSchemas = tagSchemasObject(schemas);
+    const snippets = Object.entries(tagSchemas).map(([name, value]) => `${name} {${(value.required || []).map(x => x + ': ').join(', ')}}`);
+    monaco.languages.registerCompletionItemProvider('yaml', createYamlCompletionProvider(snippets));
   };
 
   return configureMonacoCustomTags;
