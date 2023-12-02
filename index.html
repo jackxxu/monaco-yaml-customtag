@@ -6,9 +6,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monaco Editor Extension Example</title>
-  <!-- Load Monaco Editor loader script first -->
+  <!-- load ajv and yaml script before editor script -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.1.0/ajv7.bundle.js" integrity="sha512-PuzkO+wOBh6m/Jux4nXgl2ItRzed77lFDidDX500DUNlvuzr4OrXtsFhN4q0CCxPoXjTFfiw1z4FmED9J/MMdQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/yamljs@0.3.0/dist/yaml.min.js"></script>
+  <!-- load ajv and yaml script before editor script -->
   <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
 </head>
 <body>
@@ -16,7 +17,6 @@
 
   <!-- Load your extension script after Monaco Editor loader -->
   <script>
-
     document.addEventListener('DOMContentLoaded', function () {
       require.config({
         paths: {
@@ -28,10 +28,11 @@
       require(['vs/editor/editor.main'], function () {
         // Initialize Monaco Editor
         var editor = monaco.editor.create(document.getElementById('container'), {
-          value: '---\n!customTag1 value1\n!customTag2 value2',
+          value: '',
           language: 'yaml',
         });
 
+        // sample schemas
         schemas = [
           {
             "type": "object",
@@ -64,6 +65,7 @@
           },
         ]
 
+        // configure monaco editor with custom tags
         require(['monaco-yaml-customtag'], function (configureMonacoCustomTags) {
           configureMonacoCustomTags(schemas, editor)
         });
