@@ -66,7 +66,7 @@ define([], function () {
     lines.forEach((line, lineNum) => {
       let match;
 
-      while ((match = regex.exec(line)) !== null) { // loop through all the matches in the line
+      while ((match = tagRegex.exec(line)) !== null) { // loop through all the matches in the line
         const customTag = match[1];
         const startColumnNum = match.index + 1;
         let endColumnNum; // the end column number is exclusive and is based on {}
@@ -262,6 +262,43 @@ define([], function () {
       }
     });
 
+    editor.onDidChangeModelContent((event) => {
+      let customTags = findCustomTags(editor.getValue());
+      let validation_errors = [];
+      // clear all the markers
+      monaco.editor.setModelMarkers(editor.getModel(), 'yaml', []);
+
+      // // validate teh schema for each of the tags and add errors
+      customTags.forEach((tag) => {
+        let error_string;
+        let schema = tagSchemas[tag.customTag];
+
+        if (schema === undefined) {
+          error_string = tag.customTag + ' is not defined';
+        } else {
+          let validate = ajv.compile(schema);
+          if(!validate(tag.obj)) {
+            error_string = validate.errors.map((error) => {
+              return error.message;
+            }).join('\n');
+          }
+        }
+
+        if (error_string) {
+          validation_errors.push(error_string);
+          monaco.editor.setModelMarkers(editor.getModel(), 'yaml', [
+            {
+              message: error_string,
+              startLineNumber: tag.lineNum, // Change this to the desired line number
+              startColumn: tag.startColumnNum,
+              endLineNumber: tag.lineNum,   // Change this to the desired line number
+              endColumn: tag.endColumnNum,
+              severity: monaco.MarkerSeverity.Error,
+            }
+          ]);
+        }
+      });
+    });
   };
 
   return configureMonacoCustomTags;
