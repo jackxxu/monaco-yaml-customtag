@@ -1,6 +1,6 @@
 define([], function () {
-  const regex = /!([A-Z][a-zA-Z]+)?/g;
-  const regexWithoutG = new RegExp(regex.source);
+  const tagRegex = /!([A-Z][a-zA-Z0-9]+)?/g;
+  const regexWithoutG = new RegExp(tagRegex.source);
   const ajv = new window.ajv7();
   const parser = (yamlString) => { try { return YAML.parse(yamlString); } catch (e) { return null; }};
 
@@ -23,7 +23,6 @@ define([], function () {
     const targetLine = currentLine.slice(0, findWhitespaceOrEnd(currentLine, column-1));
 
     // Regex to match custom tags and keys
-    const tagRegex = /!([A-Z][a-zA-Z]+)/g;
     const keyRegex = /(\w+):/g;
 
     let customTag = null;
@@ -172,7 +171,8 @@ define([], function () {
     });
   };
 
-  function createYamlCompletionProvider(snippets) {
+  function createYamlCompletionProvider(tagSchemas) {
+    const snippets = Object.entries(tagSchemas).map(([name, value]) => `${name} {${(value.required || []).map(x => x + ': ').join(', ')}}`);
     return {
       triggerCharacters: ['!', ',', ':'],
 
@@ -206,6 +206,29 @@ define([], function () {
     }
   }
 
+  function createYamlHoverProvider(tagSchemas) {
+    return {
+      provideHover: function (model, position) {
+        const wordAtPosition = model.getWordAtPosition(position);
+        let positionInfo = getPositionInfo(model.getValue(), position.lineNumber, position.column);
+        if (positionInfo) {
+          const word = positionInfo.customTag;
+          const meaning = tagSchemas[word]['description'];
+
+          if (meaning) {
+            return {
+              contents: [
+                { value: `**${word}**` },
+                { value: meaning },
+              ],
+              range: wordAtPosition
+            };
+          }
+        }
+        return null;
+      }
+    };
+  }
 
   const tagSchemasObject = function(schemas) {
     const keyAttribute = 'name';
@@ -222,8 +245,8 @@ define([], function () {
     console.log('configureMonacoCustomTags', schemas);
     console.log('configureMonacoCustomTags', editor);
     const tagSchemas = tagSchemasObject(schemas);
-    const snippets = Object.entries(tagSchemas).map(([name, value]) => `${name} {${(value.required || []).map(x => x + ': ').join(', ')}}`);
-    monaco.languages.registerCompletionItemProvider('yaml', createYamlCompletionProvider(snippets));
+    monaco.languages.registerCompletionItemProvider('yaml', createYamlCompletionProvider(tagSchemas));
+    monaco.languages.registerHoverProvider('yaml', createYamlHoverProvider(tagSchemas));
   };
 
   return configureMonacoCustomTags;
